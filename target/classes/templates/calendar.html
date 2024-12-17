@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Calendar Events</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@latest/main.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
+    <style>
+        #event-details {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f4f4f4;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+<div id="calendar"></div>
+<div id="event-details">
+    <h2>Event Details</h2>
+    <p id="event-info">Select an event to view details</p>
+</div>
+
+<script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var calendarEl = document.getElementById('calendar');
+            var eventInfoEl = document.getElementById('event-info');
+
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                },
+                events: function(fetchInfo, successCallback, failureCallback) {
+                    fetch('/get-events')
+                        .then(response => response.json())
+                        .then(events => {
+                            const formattedEvents = events.map(event => ({
+                                title: event.title,
+                                start: event.startTime,
+                                end: event.endTime,
+                                description: event.description
+                            }));
+
+                            successCallback(formattedEvents);
+                        })
+                        .catch(error => {
+                            console.error('Error fetching events:', error);
+                            failureCallback(error);
+                        });
+                },
+                eventMouseEnter: function(info) {
+                    // Update event details when mouse hovers over an event
+                    eventInfoEl.innerHTML = `
+                        <strong>Title:</strong> ${info.event.title}<br>
+                        <strong>Start:</strong> ${info.event.startStr}<br>
+                        <strong>End:</strong> ${info.event.endStr}<br>
+                        <strong>Description:</strong> ${info.event.extendedProps.description || 'No description'}
+                    `;
+                },
+                eventMouseLeave: function() {
+                    // Reset to default message when mouse leaves
+                    eventInfoEl.innerHTML = 'Select an event to view details';
+                }
+            });
+
+            calendar.render();
+        });
+    </script>
+</body>
+</html>
