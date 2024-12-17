@@ -1,0 +1,38 @@
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 108100593623-93eep9quqa0r50ptp3elonqd3cfkf9mm.apps.googleusercontent.com
+            client-secret: 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
+            scope:
+              - profile
+              - email
+              - https://www.googleapis.com/auth/calendar.readonly
+            client-name: Google
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+            authorization-grant-type: authorization_code
+        provider:
+          google:
+            authorization-uri: https://accounts.google.com/o/oauth2/v2/auth
+            token-uri: https://oauth2.googleapis.com/token
+            user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
+
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
+    mode: HTML
+
+  # Additional configuration for OAuth2 redirect URI
+  spring:
+    security:
+      oauth2:
+        client:
+          registration:
+            google:
+              redirect-uri: "http://localhost:8080/login/oauth2/code/google"
+
+# (Optional) Configure other settings like port, etc., as needed
+server:
+  port: 8080
