@@ -1,0 +1,2 @@
+# candy
+Handy Calendar Integration
